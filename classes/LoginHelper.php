@@ -18,14 +18,12 @@ class LoginHelper extends Helper {
         $client->setAuthConfig('../client_secret.json');
         $client->setAccessType("offline");        // offline access
         $client->setIncludeGrantedScopes(true);
-        $client->fetchAccessTokenWithAuthCode($code);
+        $client->authenticate($code);
         $access_token = $client->getAccessToken();
         $_SESSION['access_token'] = $access_token['access_token'];
 
         $plus = new Google_Service_Oauth2($client);
         $person = $plus->userinfo->get();
-
-        var_dump($person);
 
         $_SESSION['name'] = $person['name'];
         $_SESSION['email'] = $person['email'];

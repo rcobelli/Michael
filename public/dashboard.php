@@ -75,7 +75,6 @@ ob_start();
     <div class="container">
         <h1>Upcoming Actions</h1>
         <ul>
-            <li>TODO: Review any contacts that are within 7 days of changing status (either side)</li>
             <?php
             foreach ($items as $item) {
                 echo "<li><a href='" . $item['href'] . "'>" . $item['text'] . "</a></li>";

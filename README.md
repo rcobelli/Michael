@@ -1,7 +1,7 @@
 # Michael - Personal CRM
 ##### Utility to create and manage your personal network
 
-![Screenshot](screenshot.png)
+![Screenshot](public/assets/screenshot.png)
 
 ## Purpose
 To automate the mental overhead related to keeping up with your network. This software can remind you to check in on people's Linkedin pages for career updates, keep track of when you last interacted and proactively remind you when you should reach back out to keep the relationship going.

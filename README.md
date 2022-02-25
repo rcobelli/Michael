@@ -12,3 +12,4 @@ To automate the mental overhead related to keeping up with your network. This so
 3. Rename `config example.ini` to `config.ini`
 4. Create a new Google API Credential ([done here](https://console.developers.google.com/apis/credentials)) and place the `client_secret.json` in the root directory of the project
 5. Place the code on a server capable of running PHP
+6. Login with Google to sync your contacts to the system

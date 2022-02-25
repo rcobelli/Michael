@@ -49,8 +49,8 @@ ob_start();
         </header>
         <hr/>
         <main role="main" class="inner">
-            <h1 class="cover-heading">Easily Organize All Your <a href="https://en.wikipedia.org/wiki/Markdown" target="_blank">Markdown</a> <a href="https://en.wikipedia.org/wiki/Runbook" target="_blank">Runbooks</a> 📕</h1>
-            <p class="lead">This utility allows you to easily create, revise and download copies of your runbooks. Get started by logging in with Google now!</p>
+            <h1 class="cover-heading">Easily Manage Your Networks with a Personal CRM</h1>
+            <p class="lead">CRMs aren't just for massive companies to manage customers, you need to manage your network too. Use Michael to remind you to check in on people's LinkedIn pages for career updates, keep track of when you last interacted and proactively remind you when you should reach back out to keep the relationship going.</p>
             <p class="lead">
                 <a href="<?php echo $helper->generateReturnURL(); ?>"><button type="button" class="btn btn-danger">Login With Google</button></a>
             </p>

@@ -1,0 +1,25 @@
+{
+    "name": "ryan/michael",
+    "authors": [
+        {
+            "name": "Ryan Cobelli",
+            "email": "ryan.cobelli@rybel-llc.com"
+        }
+    ],
+    "require": {
+        "cebe/markdown": "^1",
+        "google/apiclient": "^2",
+        "ext-json": "*",
+        "ext-mysqli": "*",
+        "rybel-llc/backbone": "*",
+        "ext-pdo": "*",
+        "ext-curl": "*",
+        "sunra/php-simple-html-dom-parser": "*"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "https://github.com/Rybel-LLC/Backbone"
+        }
+    ]
+}

@@ -3,27 +3,55 @@
 use Rybel\backbone\Helper;
 
 class LoginHelper extends Helper {
+
+    static private function getClient(): Google_Client {
+        $client = new Google_Client();
+        $client->setAuthConfig('../client_secret.json');
+        $client->setAccessType("offline");
+        $client->addScope(["profile", "email", "https://www.googleapis.com/auth/contacts.readonly"]);
+        $client->setIncludeGrantedScopes(true);
+        return $client;
+    }
+
+    function logout() {
+        $this->getClient()->revokeToken();
+        session_destroy();
+        setcookie("michael", null, 1, '/');
+    }
+
     /**
      * @param string $code Auth code from Google OAuth
      * @return bool If setting the cookies/session succeeded
      * @throws \Google\Exception
      */
     function handleReturnCode(string $code): bool {
-
+        echo "Code: " . $code . "</br>";
         if (isset($_GET['error'])) {
             exit($_GET);
         }
 
-        $client = new Google_Client();
-        $client->setAuthConfig('../client_secret.json');
-        $client->setAccessType("offline");        // offline access
-        $client->setIncludeGrantedScopes(true);
-        $client->authenticate($code);
-        $access_token = $client->getAccessToken();
-        $_SESSION['access_token'] = $access_token['access_token'];
+        $client = $this->getClient();
+        if ($client->isAccessTokenExpired()) {
+            echo "Expired access token</br>";
+            if ($client->getRefreshToken()) {
+                echo "Good refresh token</br>";
+                $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
+            } else {
+                echo "Bad refresh token</br>";
+                $accessToken = $client->fetchAccessTokenWithAuthCode($code);
+                echo "Access token:</br>";
+                var_dump($accessToken);
+                $client->setAccessToken($accessToken);
+            }
+        } else {
+            echo "Not expired</br>";
+        }
+        $_SESSION['access_token'] = $client->getAccessToken();
 
         $plus = new Google_Service_Oauth2($client);
         $person = $plus->userinfo->get();
+
+        die();
 
         $_SESSION['name'] = $person['name'];
         $_SESSION['email'] = $person['email'];
@@ -42,11 +70,7 @@ class LoginHelper extends Helper {
      * @throws \Google\Exception
      */
     function generateReturnURL() {
-        $client = new Google_Client();
-        $client->setAuthConfig('../client_secret.json');
-        $client->setAccessType("offline");        // offline access
-        $client->setIncludeGrantedScopes(true);
-        $client->addScope(["profile", "email", "https://www.googleapis.com/auth/contacts.readonly"]);
+        $client = $this->getClient();
         if (isset($_GET['email'])) {
             $client->setLoginHint(urldecode($_GET['email']));
         }

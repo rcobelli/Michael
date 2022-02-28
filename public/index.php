@@ -11,8 +11,7 @@ $config['type'] = LogStream::console;
 $helper = new LoginHelper($config);
 
 if ($_GET['logout'] == 'true') {
-    session_destroy();
-    setcookie("michael", null, 1, '/');
+    $helper->logout();
     header("Location: ?");
     die();
 } else if (isset($_GET['code'])) {
@@ -42,7 +41,7 @@ ob_start();
     <div class="container d-flex h-100 p-3 mx-auto flex-column">
         <header class="mb-3">
             <div class="inner">
-                <img src="../assets/icon.png" height="100px" style="float: left;" class="mr-5" alt="">
+                <img src="assets/icon.png" height="100" style="float: left;" class="mr-5" alt="Icon">
                 <h1 style="text-align: left;">Michael</h1>
                 <h3 style="text-align: left;">Your personal CRM</h3>
             </div>

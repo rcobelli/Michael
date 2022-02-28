@@ -6,10 +6,9 @@ RewriteEngine On
 
 RewriteCond %{HTTPS} !=on
 RewriteCond %{HTTP_HOST} ^dev.rybel-llc.com$
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI}
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L]
 
 RewriteCond %{HTTP_HOST} ^dev.rybel-llc.com$
 RewriteCond %{REQUEST_URI} !=/server-status
 RewriteCond %{REQUEST_URI} !public/
-RewriteCond %{REQUEST_URI} !vendor/
-RewriteRule (.*) /public/$1 [L]
+RewriteRule (.*) /michael/public/$1 [L]

@@ -25,33 +25,24 @@ class LoginHelper extends Helper {
      * @throws \Google\Exception
      */
     function handleReturnCode(string $code): bool {
-        echo "Code: " . $code . "</br>";
         if (isset($_GET['error'])) {
             exit($_GET);
         }
 
         $client = $this->getClient();
+        $client->setRedirectUri($this->config['baseAuthURL'] . 'index.php');
         if ($client->isAccessTokenExpired()) {
-            echo "Expired access token</br>";
             if ($client->getRefreshToken()) {
-                echo "Good refresh token</br>";
                 $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
             } else {
-                echo "Bad refresh token</br>";
                 $accessToken = $client->fetchAccessTokenWithAuthCode($code);
-                echo "Access token:</br>";
-                var_dump($accessToken);
                 $client->setAccessToken($accessToken);
             }
-        } else {
-            echo "Not expired</br>";
         }
         $_SESSION['access_token'] = $client->getAccessToken();
 
         $plus = new Google_Service_Oauth2($client);
         $person = $plus->userinfo->get();
-
-        die();
 
         $_SESSION['name'] = $person['name'];
         $_SESSION['email'] = $person['email'];

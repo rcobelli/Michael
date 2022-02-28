@@ -56,7 +56,7 @@ class ActionHelper extends Helper
                 <?php
                 foreach ($actions as $action) {
                     echo '<tr>';
-                    echo '<td>' . $action['name'] . '</td>';
+                    echo '<td>' . $action['title'] . '</td>';
                     echo '<td>' . date('m/d/Y', strtotime($action['date'])) . '</td>';
                     echo '<td><a href="?contact_id=' . $contact_id . '&convert_action=' . $action['action_id'] . '">✅</td>';
                     echo '<td><a href="?contact_id=' . $contact_id . '&delete_action=' . $action['action_id'] . '">🗑</td>';

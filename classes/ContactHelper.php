@@ -36,6 +36,11 @@ class ContactHelper extends Helper
                 $company = $person->getOrganizations()[0]->getName();
             }
 
+            if (count($this->query("SELECT * FROM Contacts WHERE name = ? AND user_id = ? AND google_id = ? AND relation_detail = ? AND linkedin = ? AND birthday_day = ? AND birthday_month = ?",
+                $name, $_SESSION['id'], $google_id, $company, $linkedin, $birthday_day, $birthday_month)) > 0) {
+                return true;
+            }
+
             $result = $this->query("INSERT INTO Contacts (name, user_id, google_id, relation_detail, linkedin, birthday_day, birthday_month) 
                                              VALUES (?, ?, ?, ?, ?, ?, ?) 
                                              ON DUPLICATE KEY UPDATE `new` = 1, `linkedin` = ?, birthday_day = ?, birthday_month = ?, relation_detail = ?",
@@ -45,7 +50,9 @@ class ContactHelper extends Helper
             if ($result === false) {
                 throw new Exception($this->getErrorMessage());
             }
+            return true;
         }
+        return false;
     }
 
     /**

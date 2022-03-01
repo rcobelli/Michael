@@ -57,7 +57,7 @@ ob_start();
         <hr />
         <main role="main" class="inner mt-5">
             <h3 class="cover-heading">Screenshot</h3>
-            <img src="assets/screenshot.png" height="1000px;" class="mb-3 border border-secondary" alt="">
+            <img src="assets/screenshot.png" height="500px;" class="mb-3 border border-secondary" alt="">
         </main>
     </div>
 <?php

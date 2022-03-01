@@ -7,8 +7,10 @@ class ContactHelper extends Helper
 {
     /**
      * @param $person Person
+     * @return bool
+     * @throws Exception
      */
-    public function importContact(Person $person)
+    public function importContact(Person $person): bool
     {
         if (count($person->getNames()) != 0) {
             $name = $person->getNames()[0]->getDisplayName();

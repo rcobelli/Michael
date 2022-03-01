@@ -25,7 +25,8 @@ class LoginHelper extends Helper {
     public function getValidatedClient(): Google_Client {
         $client = $this->getClient();
         try {
-            $client->setAccessToken($_SESSION['access_token']);
+
+            $client->setAccessToken((array) json_decode($_SESSION['access_token']));
             if ($client->isAccessTokenExpired()) {
                 if ($client->getRefreshToken()) {
                     $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
@@ -33,7 +34,7 @@ class LoginHelper extends Helper {
                     throw new Exception("Force re-login...");
                 }
             }
-        } catch (Exception $e) {
+        } catch (Exception|Error $e) {
             header("Location: index.php");
             die();
         }
@@ -70,7 +71,7 @@ class LoginHelper extends Helper {
                 $client->setAccessToken($accessToken);
             }
         }
-        $_SESSION['access_token'] = $client->getAccessToken();
+        $accessToken = json_encode($client->getAccessToken());
 
         $plus = new Google_Service_Oauth2($client);
         $person = $plus->userinfo->get();
@@ -78,13 +79,11 @@ class LoginHelper extends Helper {
         $_SESSION['name'] = $person['name'];
         $_SESSION['email'] = $person['email'];
         $_SESSION['id'] = $person['id'];
+        $_SESSION['access_token'] = $accessToken;
 
-        if (isset($_SESSION['access_token'])) {
-            $client->setAccessToken($_SESSION['access_token']);
-            setcookie('michael', json_encode(array('name' => $person['name'], 'email' => $person['email'], 'id' => $person['id'], 'access_token' => $accessToken)), time() + (86400 * 30), "/"); // 86400 = 1 day
-            return true;
-        }
-        return false;
+        $client->setAccessToken($_SESSION['access_token']);
+        setcookie('michael', json_encode(array('name' => $person['name'], 'email' => $person['email'], 'id' => $person['id'], 'access_token' => $accessToken)), time() + (86400 * 30), "/"); // 86400 = 1 day
+        return true;
     }
 
     /**

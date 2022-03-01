@@ -53,11 +53,8 @@ class ContactHelper extends Helper
      * @throws \Google\Exception
      */
     public function syncWithGoogle() {
-        $client = new Google_Client();
-        $client->setAuthConfig('../client_secret.json');
-        $client->setAccessType("offline");        // offline access
-        $client->setIncludeGrantedScopes(true);
-        $client->setAccessToken($_SESSION['access_token']);
+        $loginHelper = new LoginHelper($this->config);
+        $client = $loginHelper->getValidatedClient();
         $service = new Google_Service_PeopleService($client);
 
         $optParams = array(
@@ -71,34 +68,67 @@ class ContactHelper extends Helper
         }
     }
 
+    /**
+     * @param string $userID
+     * @return array
+     */
     public function getContactsStatusInfo(string $userID): array {
         return $this->query("SELECT contact_id, Contacts.name, last_contact, last_contact_details, relation, relation_detail, Contacts.tier_id, Tiers.name as tier_name, linkedin, linkedin_last_check, birthday_day, birthday_month, new, ABS(DATEDIFF(last_contact, NOW())) as contact_gap, Tiers.greenDays, Tiers.YellowDays, Tiers.redDays FROM Contacts, Tiers WHERE Contacts.tier_id = Tiers.tier_id AND last_contact IS NOT NULL AND user_id = ? ORDER BY Contacts.name", $userID);
     }
 
+    /**
+     * @param string $userID
+     * @return array
+     */
     public function getContacts(string $userID): array {
         return $this->query("SELECT contact_id, Contacts.name, last_contact, last_contact_details, relation, relation_detail, Contacts.tier_id, Tiers.name as tier_name, linkedin, linkedin_last_check, birthday_day, birthday_month, new, ABS(DATEDIFF(last_contact, NOW())) as contact_gap FROM Contacts, Tiers WHERE Contacts.tier_id = Tiers.tier_id AND user_id = ? ORDER BY Contacts.name", $userID);
     }
 
+    /**
+     * @param string $userID
+     * @return array
+     */
     public function getNewContacts(string $userID): array {
         return $this->query("SELECT contact_id, Contacts.name, last_contact, last_contact_details, relation, relation_detail, Contacts.tier_id, Tiers.name as tier_name, linkedin, linkedin_last_check, birthday_day, birthday_month, new, ABS(DATEDIFF(last_contact, NOW())) as contact_gap FROM Contacts, Tiers WHERE Contacts.tier_id = Tiers.tier_id AND new = 1 AND user_id = ? ORDER BY Contacts.name", $userID);
     }
 
+    /**
+     * @param string $userID
+     * @return array
+     */
     public function getStaleLinkedinContacts(string $userID): array {
         return $this->query("SELECT contact_id, Contacts.name, last_contact, last_contact_details, relation, relation_detail, Contacts.tier_id, Tiers.name as tier_name, linkedin, linkedin_last_check, birthday_day, birthday_month, new, ABS(DATEDIFF(last_contact, NOW())) as contact_gap FROM Contacts, Tiers WHERE Contacts.tier_id = Tiers.tier_id AND (ABS(DATEDIFF(linkedin_last_check, NOW())) >= 90 OR (linkedin_last_check IS NULL AND linkedin IS NOT NULL)) AND user_id = ? ORDER BY Contacts.name", $userID);
     }
 
+    /**
+     * @param string $userID
+     * @param string $contactID
+     * @return array
+     */
     public function getContact(string $userID, string $contactID): array {
         return $this->query("SELECT contact_id, Contacts.name, last_contact, last_contact_details, relation, relation_detail, Contacts.tier_id, Tiers.name as tier_name, linkedin, linkedin_last_check, birthday_day, birthday_month, new, ABS(DATEDIFF(last_contact, NOW())) as contact_gap FROM Contacts, Tiers WHERE Contacts.tier_id = Tiers.tier_id AND user_id = ? AND contact_id = ? LIMIT 1", $userID, $contactID);
     }
 
+    /**
+     * @return array
+     */
     public function getTiers(): array {
         return $this->query("SELECT * FROM Tiers;");
     }
 
+    /**
+     * @param $contact_id
+     * @return bool
+     */
     public function updateLinkedinCheck($contact_id): bool {
         return $this->query("UPDATE Contacts SET linkedin_last_check = NOW() WHERE contact_id = ?", $contact_id);
     }
 
+    /**
+     * @param $gap
+     * @param $tier_id
+     * @return int
+     */
     public function getColorCode($gap, $tier_id): int {
         if (is_null($gap)) return -1;
         $result = $this->query("SELECT * FROM Tiers WHERE tier_id = ? LIMIT 1", $tier_id);
@@ -108,6 +138,11 @@ class ContactHelper extends Helper
         return 4;
     }
 
+    /**
+     * @param $gap
+     * @param $tier_id
+     * @return string
+     */
     public function getColorEmoji($gap, $tier_id): string {
         if (is_null($gap)) return "❌";
         $result = $this->query("SELECT * FROM Tiers WHERE tier_id = ? LIMIT 1", $tier_id);
@@ -117,22 +152,48 @@ class ContactHelper extends Helper
         return "‼";
     }
 
+    /**
+     * @param $tier_id
+     * @return array
+     */
     public function getTierDates($tier_id): array {
         return $this->query("SELECT * FROM Tiers WHERE tier_id = ? LIMIT 1", $tier_id);
     }
 
+    /**
+     * @param $data
+     * @return bool
+     */
     public function updateContact($data): bool {
+        if ($data['last_contact'] == "") {
+            $data['last_contact'] = null;
+        }
+
+        if ($data['last_contact_details'] == "") {
+            $data['last_contact_details'] = null;
+        }
         return $this->query("UPDATE Contacts SET relation = ?, tier_id = ?, last_contact = ?, last_contact_details = ? WHERE user_id = ? AND contact_id = ?", $data['relation'], $data['tier'], $data['last_contact'], $data['last_contact_details'], $data['user_id'], $data['contact_id']);
     }
 
+    /**
+     * @param $data
+     * @return bool
+     */
     public function updateLastContact($data): bool {
         return $this->query("UPDATE Contacts SET last_contact = ?, last_contact_details = ? WHERE contact_id = ?", $data['last_contact'], $data['last_contact_details'], $data['contact_id']);
     }
 
+    /**
+     * @param $contact_id
+     * @return bool
+     */
     public function viewContact($contact_id): bool {
         return $this->query("UPDATE Contacts SET new = 0 WHERE contact_id = ?", $contact_id);
     }
 
+    /**
+     * @return void
+     */
     public function render_mainTable() {
         $contacts = $this->getContacts($_SESSION['id']);
         if (count($contacts) > 0) {

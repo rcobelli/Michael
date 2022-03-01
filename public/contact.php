@@ -18,10 +18,7 @@ if (empty($_GET['contact_id'])) {
 }
 
 $contactData = $contactHelper->getContact($_SESSION['id'], $_GET['contact_id']);
-if ($_GET['openLinkedin'] == 'true') {
-    $contactHelper->updateLinkedinCheck($_GET['contact_id']);
-    echo '<script>window.open("' . $contactData['linkedin'] . '");</script>';
-} else if (isset($_GET['delete_action'])) {
+if (isset($_GET['delete_action'])) {
     if ($actionHelper->deleteAction($_GET['delete_action'])) {
         $success = true;
         header("Location: ?contact_id=" . $_GET['contact_id']);
@@ -40,6 +37,7 @@ if ($_GET['openLinkedin'] == 'true') {
 } else if ($_POST['action'] == 'updateDetails') {
     if ($contactHelper->updateContact($_POST)) {
         $success = true;
+        $contactData = $contactHelper->getContact($_SESSION['id'], $_GET['contact_id']);
     } else {
         $error = $contactHelper->getErrorMessage();
     }
@@ -93,12 +91,16 @@ ob_start();
         </div>
         <h1><?php echo $contactData['name']?></h1>
         <h4><?php echo $contactData['relation']; ?> contact (<?php echo $contactData['relation_detail']; ?>) - <?php echo $contactData['tier_name'];?></h4>
-        <h5 title="<?php echo $contactData['last_contact_details']; ?>">Last contacted on <?php echo date('m/d/Y', strtotime($contactData['last_contact'])); ?></h5>
+        <?php
+        if (!is_null($contactData['last_contact'])) {
+            echo '<h5 title="' . $contactData['last_contact_details'] . '">Last contacted on ' . date('m/d/Y', strtotime($contactData['last_contact'])) . '</h5>';
+        }
+        ?>
         <hr/>
         <button id="newJobButton" class="btn btn-success float-right ml-2" onclick="document.getElementById('newJobForm').style.display = 'block'; document.getElementById('newJobButton').style.display = 'none'">Add Job</button>
         <?php
         if (!empty($contactData['linkedin'])) {
-            echo '<a class="btn btn-primary float-right" href="?contact_id=' . $_GET['contact_id'] . '&openLinkedin=true">Open LinkedIn Profile</a>';
+            echo '<a class="btn btn-primary float-right" href="linkedinRedirect.php?contact_id=' . $_GET['contact_id'] . '" target="_blank">Open LinkedIn Profile</a>';
         }
         ?>
         <h2>Jobs</h2>

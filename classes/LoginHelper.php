@@ -4,15 +4,47 @@ use Rybel\backbone\Helper;
 
 class LoginHelper extends Helper {
 
-    static private function getClient(): Google_Client {
+    /**
+     * @return Google_Client
+     * @throws \Google\Exception
+     */
+    private function getClient(): Google_Client {
         $client = new Google_Client();
         $client->setAuthConfig('../client_secret.json');
         $client->setAccessType("offline");
         $client->addScope(["profile", "email", "https://www.googleapis.com/auth/contacts.readonly"]);
         $client->setIncludeGrantedScopes(true);
+        $client->setRedirectUri($this->config['baseAuthURL'] . 'index.php');
         return $client;
     }
 
+    /**
+     * @return Google_Client
+     * @throws \Google\Exception
+     */
+    public function getValidatedClient(): Google_Client {
+        $client = $this->getClient();
+        try {
+            $client->setAccessToken($_SESSION['access_token']);
+            if ($client->isAccessTokenExpired()) {
+                if ($client->getRefreshToken()) {
+                    $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
+                } else {
+                    throw new Exception("Force re-login...");
+                }
+            }
+        } catch (Exception $e) {
+            header("Location: index.php");
+            die();
+        }
+
+        return $client;
+    }
+
+    /**
+     * @return void
+     * @throws \Google\Exception
+     */
     function logout() {
         $this->getClient()->revokeToken();
         session_destroy();
@@ -30,7 +62,6 @@ class LoginHelper extends Helper {
         }
 
         $client = $this->getClient();
-        $client->setRedirectUri($this->config['baseAuthURL'] . 'index.php');
         if ($client->isAccessTokenExpired()) {
             if ($client->getRefreshToken()) {
                 $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
@@ -50,7 +81,7 @@ class LoginHelper extends Helper {
 
         if (isset($_SESSION['access_token'])) {
             $client->setAccessToken($_SESSION['access_token']);
-            setcookie('michael', json_encode(array('name' => $person['name'], 'email' => $person['email'], 'id' => $person['id'], 'access_token' => $access_token['access_token'])), time() + (86400 * 30), "/"); // 86400 = 1 day
+            setcookie('michael', json_encode(array('name' => $person['name'], 'email' => $person['email'], 'id' => $person['id'], 'access_token' => $accessToken)), time() + (86400 * 30), "/"); // 86400 = 1 day
             return true;
         }
         return false;
@@ -65,7 +96,6 @@ class LoginHelper extends Helper {
         if (isset($_GET['email'])) {
             $client->setLoginHint(urldecode($_GET['email']));
         }
-        $client->setRedirectUri($this->config['baseAuthURL'] . 'index.php');
         return $client->createAuthUrl();
     }
 

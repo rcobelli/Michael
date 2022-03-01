@@ -56,9 +56,8 @@ ob_start();
         </main>
         <hr />
         <main role="main" class="inner mt-5">
-            <h3 class="cover-heading">Example</h3>
-            <p class="lead">You can download any revision of your runbook as a PDF. Below is an example</p>
-            <img src="../assets/example.png" height="1000px;" class="mb-3 border border-secondary" alt="">
+            <h3 class="cover-heading">Screenshot</h3>
+            <img src="assets/screenshot.png" height="1000px;" class="mb-3 border border-secondary" alt="">
         </main>
     </div>
 <?php

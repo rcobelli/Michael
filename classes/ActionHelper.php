@@ -4,22 +4,42 @@ use Rybel\backbone\Helper;
 
 class ActionHelper extends Helper
 {
+    /**
+     * @param $contact_id
+     * @return array|bool
+     */
     public function getContactActions($contact_id) {
         return $this->query("SELECT Actions.action_id, Actions.title, Actions.date, Contacts.name, Contacts.contact_id FROM Actions, Contacts WHERE Actions.contact_id = Contacts.contact_id AND Contacts.contact_id = ?", $contact_id);
     }
 
+    /**
+     * @param $user_id
+     * @return array|bool
+     */
     public function getUserActions($user_id) {
         return $this->query("SELECT Actions.action_id, Actions.title, Actions.date, Contacts.name, Contacts.contact_id FROM Actions, Contacts WHERE Actions.contact_id = Contacts.contact_id AND Contacts.user_id = ?", $user_id);
     }
 
+    /**
+     * @param $action_id
+     * @return array|bool
+     */
     public function getAction($action_id) {
         return $this->query("SELECT Actions.action_id, Actions.title, Actions.date, Contacts.name, Contacts.contact_id FROM Actions, Contacts WHERE Actions.contact_id = Contacts.contact_id AND Actions.action_id = ? LIMIT 1", $action_id);
     }
 
+    /**
+     * @param $action_id
+     * @return array|bool
+     */
     public function deleteAction($action_id) {
         return $this->query("DELETE FROM Actions WHERE action_id = ?", $action_id);
     }
 
+    /**
+     * @param $action_id
+     * @return array|bool
+     */
     public function convertAction($action_id) {
         $actionData = $this->getAction($action_id);
 
@@ -35,10 +55,18 @@ class ActionHelper extends Helper
         return $this->deleteAction($action_id);
     }
 
+    /**
+     * @param $data
+     * @return array|bool
+     */
     public function createAction($data) {
         return $this->query("INSERT INTO Actions (contact_id, title, date) VALUES (?, ?, ?)", $data['contact_id'], $data['title'], $data['date']);
     }
 
+    /**
+     * @param $contact_id
+     * @return void
+     */
     public function render_contactActions($contact_id) {
         $actions = $this->getContactActions($contact_id);
         if (count($actions) > 0) {

@@ -208,9 +208,10 @@ class ContactHelper extends Helper
         $contacts = $this->getContacts($_SESSION['id']);
         if (count($contacts) > 0) {
             ?>
-            <table class="table table-hover">
+            <table class="table table-hover" id="dtBasicExample">
                 <thead>
                     <tr>
+                        <th>&nbsp;</th>
                         <th>Name</th>
                         <th>Relation</th>
                         <th>Tier</th>
@@ -222,7 +223,8 @@ class ContactHelper extends Helper
                     <?php
                     foreach ($contacts as $contact) {
                         echo '<tr class="clickable-row" data-href="contact.php?contact_id=' . $contact['contact_id'] . '">';
-                        echo '<td>' . ($contact['new'] ? "🌟" : "") . $contact['name'] . '</td>';
+                        echo '<td>' . ($contact['new'] ? "🌟" : "") . "</td>";
+                        echo '<td>' . $contact['name'] . '</td>';
                         echo '<td>' . $contact['relation'] . '</td>';
                         echo '<td>' . $contact['tier_name'] . '</td>';
                         echo '<td>' . $this->getColorEmoji($contact['contact_gap'], $contact['tier_id']) . '</td>';

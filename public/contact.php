@@ -90,7 +90,10 @@ ob_start();
             </div>
         </div>
         <h1><?php echo $contactData['name']?></h1>
-        <h4><?php echo $contactData['relation']; ?> contact (<?php echo $contactData['relation_detail']; ?>) - <?php echo $contactData['tier_name'];?></h4>
+        <h4>
+            <?php echo $contactData['relation']; ?> contact
+            <?php if (!empty($contactData['relation_detail'])) { echo '(' . $contactData['relation_detail'] . ')'; } ?>
+            - <?php echo $contactData['tier_name'];?></h4>
         <?php
         if (!is_null($contactData['last_contact'])) {
             echo '<h5 title="' . $contactData['last_contact_details'] . '">Last contacted on ' . date('m/d/Y', strtotime($contactData['last_contact'])) . '</h5>';

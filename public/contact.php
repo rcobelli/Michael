@@ -76,6 +76,7 @@ ob_start();
                 <?php
                 $tierData = $contactHelper->getTierDates($contactData['tier_id']);
                 switch ($contactHelper->getColorCode($contactData['contact_gap'], $contactData['tier_id'])) {
+                    case 4:
                     case -1:
                         echo '<button type="button" class="btn btn-dark" disabled>N/A</button>';
                         break;
@@ -93,7 +94,8 @@ ob_start();
         <h4>
             <?php echo $contactData['relation']; ?> contact
             <?php if (!empty($contactData['relation_detail'])) { echo '(' . $contactData['relation_detail'] . ')'; } ?>
-            - <?php echo $contactData['tier_name'];?></h4>
+            - <?php echo $contactData['tier_name'];?>
+        </h4>
         <?php
         if (!is_null($contactData['last_contact'])) {
             echo '<h5 title="' . $contactData['last_contact_details'] . '">Last contacted on ' . date('m/d/Y', strtotime($contactData['last_contact'])) . '</h5>';

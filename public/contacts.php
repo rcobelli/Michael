@@ -38,6 +38,7 @@ ob_start();
                 $('.dataTables_length').addClass('bs-select');
             });
         </script>
+        <br/>
     </div>
 <?php
 // End rendering the content

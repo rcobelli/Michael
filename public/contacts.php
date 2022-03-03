@@ -32,12 +32,6 @@ ob_start();
         <a href="?sync=true"><button type="button" class="btn btn-primary float-right">Sync with Google</button></a>
         <h1>Contacts</h1>
         <?php $helper->render_mainTable(); ?>
-        <script>
-            $(document).ready(function () {
-                $('#dtBasicExample').DataTable({"pageLength": 25});
-                $('.dataTables_length').addClass('bs-select');
-            });
-        </script>
         <br/>
     </div>
 <?php

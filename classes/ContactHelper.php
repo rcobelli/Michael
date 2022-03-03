@@ -38,16 +38,17 @@ class ContactHelper extends Helper
                 $company = $person->getOrganizations()[0]->getName();
             }
 
-            if (count($this->query("SELECT * FROM Contacts WHERE name = ? AND user_id = ? AND google_id = ? AND relation_detail = ? AND linkedin = ? AND birthday_day = ? AND birthday_month = ?",
-                $name, $_SESSION['id'], $google_id, $company, $linkedin, $birthday_day, $birthday_month)) > 0) {
-                return true;
+            // Check if the user hasn't changed
+            $query = $this->query("SELECT * FROM Contacts WHERE google_id = ? LIMIT 1", $google_id);
+            if (!empty($query)) {
+                if ($query['name'] == $name && $query['relation_detail'] == $company && $query['linkedin'] ==  $linkedin
+                    && $query['birthday_day'] == $birthday_day && $query['birthday_month'] == $birthday_month) {
+                    return true;
+                }
             }
 
-            $result = $this->query("INSERT INTO Contacts (name, user_id, google_id, relation_detail, linkedin, birthday_day, birthday_month) 
-                                             VALUES (?, ?, ?, ?, ?, ?, ?) 
-                                             ON DUPLICATE KEY UPDATE `new` = 1, `linkedin` = ?, birthday_day = ?, birthday_month = ?, relation_detail = ?",
-                $name, $_SESSION['id'], $google_id, $company, $linkedin, $birthday_day, $birthday_month,
-                $linkedin, $birthday_day, $birthday_month, $company
+            $result = $this->query("UPDATE Contacts SET `new` = 1, `linkedin` = ?, birthday_day = ?, birthday_month = ?, relation_detail = ? WHERE google_id = ?",
+                $linkedin, $birthday_day, $birthday_month, $company, $google_id
             );
             if ($result === false) {
                 throw new Exception($this->getErrorMessage());

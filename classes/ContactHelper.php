@@ -47,8 +47,11 @@ class ContactHelper extends Helper
                 }
             }
 
-            $result = $this->query("UPDATE Contacts SET `new` = 1, `linkedin` = ?, birthday_day = ?, birthday_month = ?, relation_detail = ? WHERE google_id = ?",
-                $linkedin, $birthday_day, $birthday_month, $company, $google_id
+            $result = $this->query("INSERT INTO Contacts (name, user_id, google_id, relation_detail, linkedin, birthday_day, birthday_month) 
+                                             VALUES (?, ?, ?, ?, ?, ?, ?) 
+                                             ON DUPLICATE KEY UPDATE `new` = 1, `linkedin` = ?, birthday_day = ?, birthday_month = ?, relation_detail = ?",
+                $name, $_SESSION['id'], $google_id, $company, $linkedin, $birthday_day, $birthday_month,
+                $linkedin, $birthday_day, $birthday_month, $company
             );
             if ($result === false) {
                 throw new Exception($this->getErrorMessage());
